@@ -5,8 +5,7 @@
 #define NN 20
 
 
-__global__
-void sum_array (double *array_1, double *array_2, double *array_3, int n_array) {
+__global__ void sum_array (double *array_1, double *array_2, double *array_3, int n_array) {
     int i, j, n;
     i = blockIdx.x * blockDim.x + threadIdx.x;
 
@@ -19,8 +18,7 @@ void sum_array (double *array_1, double *array_2, double *array_3, int n_array) 
     
 }
 
-__global__
-void derivertive_array (double *array_in, double *array_out, int n_array) {
+__global__ void derivertive_array (double *array_in, double *array_out, int n_array) {
     int i;
     i = blockIdx.x * blockDim.x + threadIdx.x;
 
@@ -53,7 +51,7 @@ void initialize_array (double *array, int size) {
     //for (i = 0; i < NN; i++)  array[i] = (double) i;
 
     for (i = 0; i < NN; i++) {
-        if (i < NN / 3 || 2 * NN/ 3 < i) array[i] = 0.0;
+        if (i < 2 * NN / 5 || 3 * NN / 5 < i) array[i] = 0.0;
         else array[i] = 1.0;
     }
 
@@ -77,8 +75,8 @@ int main () {
     time_t start_time, end_time;
     dim3 Grid, Block;
 
-    Grid.x = NN / 196 + 1;
-    Block.x = 196;
+    Grid.x = NN / 4 + 1;
+    Block.x = 4;
 
     printf ("start calc\n");
     start_time = time (NULL);
@@ -131,7 +129,7 @@ int main () {
             cudaMemcpy (array_1, d_array_1, n_bytes, cudaMemcpyDeviceToHost);
             print_result (array_1, NN);
         }
-        solve_diffusion_eq <<<Grid, Block>>> (d_array_1, d_array_3, 0.0001, 0.0001, n_bytes);
+        solve_diffusion_eq <<<Grid, Block>>> (d_array_1, d_array_3, 0.001, 0.0001, n_bytes);
         cudaDeviceSynchronize();
         renew_vers <<<Grid, Block>>> (d_array_3, d_array_1);
         cudaDeviceSynchronize();
